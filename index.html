@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Champions Arena</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Title Screen */
+        .title-screen {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="a"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="50" cy="50" r="50" fill="url(%23a)"/></svg>');
+            background-size: 200px 200px;
+            animation: backgroundFloat 20s ease-in-out infinite;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .title-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, transparent 0%, rgba(0,0,0,0.3) 100%);
+            pointer-events: none;
+        }
+
+        .title-screen:hover {
+            background-size: 220px 220px;
+        }
+
+        .game-title {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 60px #00ffff;
+            margin-bottom: 2rem;
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+
+        .start-text {
+            font-size: 1.5rem;
+            color: #aaa;
+            animation: pulseText 2s ease-in-out infinite;
+        }
+
+        @keyframes titleGlow {
+            from { text-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 60px #00ffff; }
+            to { text-shadow: 0 0 30px #00ffff, 0 0 60px #00ffff, 0 0 90px #00ffff; }
+        }
+
+        @keyframes pulseText {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes backgroundFloat {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+        }
+
+        /* Character Selection */
+        .character-selection {
+            display: none;
+            height: 100vh;
+            padding: 1rem 0;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .selection-title {
+            text-align: center;
+            color: #fff;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px #00ffff;
+            flex-shrink: 0;
+        }
+
+        .character-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            width: 100%;
+        }
+
+        .character-icon {
+            width: 100%;
+            height: 100%;
+            min-height: 120px;
+            background: linear-gradient(145deg, #2a2a3e, #1a1a2e);
+            border: 3px solid #333;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .character-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(0,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+
+        .character-icon:hover {
+            transform: translateY(-10px) scale(1.05);
+            border-color: #00ffff;
+            box-shadow: 0 20px 40px rgba(0,255,255,0.3);
+        }
+
+        .character-icon:hover::before {
+            opacity: 1;
+            animation: shimmer 1.5s ease-in-out;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .character-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            border-radius: 50%;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            font-weight: bold;
+            
+        }
+        .character-avatar img{
+            height: 100%;
+            width: 100%;
+            border-radius: 50%;
+            
+        }
+        .character-name {
+            color: #fff;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        /* Modal Styles */
+        .modal-content {
+            background: linear-gradient(145deg, #1a1a2e, #0a0a0a);
+            border: 2px solid #333;
+            border-radius: 20px;
+            color: #fff;
+        }
+
+        .modal-header {
+            border-bottom: 2px solid #333;
+            background: linear-gradient(90deg, #2a2a3e, #1a1a2e);
+        }
+
+        .modal-title {
+            color: #00ffff;
+            font-weight: 700;
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
+
+        .character-details {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .character-image {
+            width: 300px;
+            height: 400px;
+            background: linear-gradient(145deg, #ff6b6b, #4ecdc4);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .character-info h3 {
+            color: #00ffff;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .character-info p {
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            color: #ccc;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 5px;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 5%;
+            background: linear-gradient(90deg, rgba(0,255,255,0.2), transparent);
+        }
+
+        .carousel-control-prev:hover,
+        .carousel-control-next:hover {
+            background: linear-gradient(90deg, rgba(0,255,255,0.4), transparent);
+        }
+
+        /* Custom grid layouts */
+        .grid-row-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            height: calc((100vh - 200px) / 3);
+        }
+
+        .grid-row-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            height: calc((100vh - 200px) / 3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 2.5rem;
+            }
+            
+            .selection-title {
+                font-size: 2rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .grid-row-3,
+            .grid-row-4 {
+                grid-template-columns: repeat(2, 1fr);
+                height: calc((100vh - 180px) / 5);
+            }
+            
+            .character-details {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .character-image {
+                width: 250px;
+                height: 300px;
+                font-size: 3rem;
+            }
+
+            .character-avatar {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+
+            .character-name {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Title Screen -->
+    <div class="title-screen" id="titleScreen">
+        <h1 class="game-title">CHAMPIONS ARENA</h1>
+        <p class="start-text">Click to Enter</p>
+    </div>
+
+    <!-- Character Selection -->
+    <div class="character-selection" id="characterSelection">
+        <h2 class="selection-title">SELECT YOUR CHARACTER</h2>
+        
+        <div class="character-container">
+            <!-- First Row - 3 Characters -->
+            <div class="grid-row-3">
+                <div class="character-icon" data-character="0">
+                    <div class="character-avatar">
+                        <img src="Assets/IMG/3rd Year Rep. Isiah.png" alt="" srcset="">
+                    </div>
+                    <div class="character-name">Isaih D. Jordan</div>
+                </div>
+                <div class="character-icon" data-character="1">
+                    <div class="character-avatar" style="background: linear-gradient(45deg, #4ecdc4, #44a08d);">B</div>
+                    <div class="character-name">Blaze Knight</div>
+                </div>
+                <div class="character-icon" data-character="2">
+                    <div class="character-avatar" style="background: linear-gradient(45deg, #a8edea, #fed6e3);">C</div>
+                    <div class="character-name">Crystal Sage</div>
+                </div>
+            </div>
+
+            <!-- Second Row - 4 Characters -->
+            <div class="grid-row-4">
+                <div class="character-icon" data-character="3">
+                    <div class="character-avatar" style="background: linear-gradient(45deg, #ff9a9e, #fecfef);">D</div>
+                    <div class="character-name">Dark Phantom</div>
+                </div>
+                <div class="character-icon" data-character="4">
+                    <div class="character-avatar" style="background: linear-gradient(45deg, #a18cd1, #fbc2eb);">E</div>
+                    <div class="character-name">Echo Warrior</div>
+                </div>
+                <div class="character-icon" data-character="5">
+                    <div class="character-avatar" style="background: linear-gradient(45deg, #fad0c4, #ffd1ff);">F</div>
+                    <div class="character-name">Frost Guardian</div>
+                </div>
+                <div class="character-icon" data-character="6">
+                    <div class="character-avatar" style="background: linear-gradient(45deg, #ff758c, #764ba2);">G</div>
+                    <div class="character-name">Ghost Hunter</div>
+                </div>
+            </div>
+
+            <!-- Third Row - 3 Characters -->
+            <div class="grid-row-3">
+                <div class="character-icon" data-character="7">
+                    <div class="character-avatar" style="background: linear-gradient(45deg, #667eea, #764ba2);">H</div>
+                    <div class="character-name">Heavy Tank</div>
+                </div>
+                <div class="character-icon" data-character="8">
+                    <div class="character-avatar" style="background: linear-gradient(45deg, #f093fb, #f5576c);">I</div>
+                    <div class="character-name">Ice Mage</div>
+                </div>
+                <div class="character-icon" data-character="9">
+                    <div class="character-avatar" style="background: linear-gradient(45deg, #4facfe, #00f2fe);">J</div>
+                    <div class="character-name">Jade Assassin</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Character Modal -->
+    <div class="modal fade" id="characterModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Character Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="characterCarousel" class="carousel slide" data-bs-ride="false">
+                        <div class="carousel-inner" id="carouselContent">
+                            <!-- Carousel items will be populated by JavaScript -->
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#characterCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#characterCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Character data
+        const characters = [
+            {
+                name: "Isaih D. Jordan",
+                position: "CSC President",
+                avatar: "<img src='Assets/IMG/3rd Year Rep. Isiah.png' style='height:100%; width:100%;' alt='' srcset=''>",
+                gradient: "linear-gradient(45deg, #ff6b6b, #ff8e53)",
+                description: "A fierce warrior who commands the power of lightning and wind. Born in the floating cities above the clouds, Aria has mastered aerial combat and can summon devastating storms.",
+                stats: { Health: 85, Attack: 92, Defense: 78, Speed: 95, Magic: 88 }
+            },
+            {
+                name: "Blaze Knight",
+                position: "CSC President",
+                avatar: "B",
+                gradient: "linear-gradient(45deg, #4ecdc4, #44a08d)",
+                description: "A noble paladin wielding sacred flames. Sworn to protect the innocent, Blaze Knight's burning blade can cleanse evil and heal allies with divine fire.",
+                stats: { Health: 95, Attack: 88, Defense: 92, Speed: 70, Magic: 85 }
+            },
+            {
+                name: "Crystal Sage",
+                position: "CSC President",
+                avatar: "C",
+                gradient: "linear-gradient(45deg, #a8edea, #fed6e3)",
+                description: "An ancient mystic who manipulates crystalline structures. With knowledge spanning millennia, the Crystal Sage can create protective barriers and launch devastating gem projectiles.",
+                stats: { Health: 70, Attack: 75, Defense: 85, Speed: 80, Magic: 98 }
+            },
+            {
+                name: "Dark Phantom",
+                position: "CSC President",
+                avatar: "D",
+                gradient: "linear-gradient(45deg, #ff9a9e, #fecfef)",
+                description: "A mysterious assassin who walks between shadows. Once a noble knight, now commands darkness itself, able to phase through attacks and strike from the void.",
+                stats: { Health: 75, Attack: 95, Defense: 65, Speed: 98, Magic: 87 }
+            },
+            {
+                name: "Echo Warrior",
+                position: "CSC President",
+                avatar: "E",
+                gradient: "linear-gradient(45deg, #a18cd1, #fbc2eb)",
+                description: "A time-displaced fighter with temporal abilities. Can create echoes of past actions, allowing for devastating combo attacks and tactical advantages in battle.",
+                stats: { Health: 80, Attack: 90, Defense: 75, Speed: 88, Magic: 82 }
+            },
+            {
+                name: "Frost Guardian",
+                position: "CSC President",
+                avatar: "F",
+                gradient: "linear-gradient(45deg, #fad0c4, #ffd1ff)",
+                description: "A stalwart defender from the frozen north. Masters ice magic to create impenetrable walls and can freeze enemies solid with a touch.",
+                stats: { Health: 100, Attack: 70, Defense: 98, Speed: 60, Magic: 90 }
+            },
+            {
+                name: "Ghost Hunter",
+                position: "CSC President",
+                avatar: "G",
+                gradient: "linear-gradient(45deg, #ff758c, #764ba2)",
+                description: "A supernatural investigator armed with spectral weapons. Can see and interact with spirits, using ethereal energy to banish otherworldly threats.",
+                stats: { Health: 78, Attack: 85, Defense: 70, Speed: 92, Magic: 95 }
+            },
+            {
+                name: "Heavy Tank",
+                position: "CSC President",
+                avatar: "H",
+                gradient: "linear-gradient(45deg, #667eea, #764ba2)",
+                description: "An armored colossus built for endurance. Equipped with the heaviest armor and weapons, this mechanical warrior can withstand any assault while dealing crushing blows.",
+                stats: { Health: 100, Attack: 95, Defense: 100, Speed: 45, Magic: 40 }
+            },
+            {
+                name: "Ice Mage",
+                position: "CSC President",
+                avatar: "I",
+                gradient: "linear-gradient(45deg, #f093fb, #f5576c)",
+                description: "A spellcaster who harnesses the power of absolute zero. Can create blizzards, ice storms, and freeze the very air around enemies.",
+                stats: { Health: 65, Attack: 80, Defense: 60, Speed: 75, Magic: 100 }
+            },
+            {
+                name: "Jade Assassin",
+                position: "CSC President",
+                avatar: "J",
+                gradient: "linear-gradient(45deg, #4facfe, #00f2fe)",
+                description: "A silent killer from the eastern temples. Moves like flowing water and strikes with the precision of a master craftsman, using poisoned jade weapons.",
+                stats: { Health: 72, Attack: 98, Defense: 68, Speed: 100, Magic: 78 }
+            }
+        ];
+
+        // DOM Elements
+        const titleScreen = document.getElementById('titleScreen');
+        const characterSelection = document.getElementById('characterSelection');
+        const characterModal = new bootstrap.Modal(document.getElementById('characterModal'));
+        const carouselContent = document.getElementById('carouselContent');
+        const carousel = new bootstrap.Carousel(document.getElementById('characterCarousel'));
+
+        // Initialize
+        titleScreen.addEventListener('click', showCharacterSelection);
+        document.querySelectorAll('.character-icon').forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                const characterIndex = parseInt(e.currentTarget.dataset.character);
+                showCharacterModal(characterIndex);
+            });
+        });
+
+        function showCharacterSelection() {
+            titleScreen.style.display = 'none';
+            characterSelection.style.display = 'block';
+        }
+
+        function showCharacterModal(selectedIndex) {
+            // Generate carousel content
+            carouselContent.innerHTML = '';
+            
+            characters.forEach((character, index) => {
+                const isActive = index === selectedIndex ? 'active' : '';
+                const carouselItem = document.createElement('div');
+                carouselItem.className = `carousel-item ${isActive}`;
+                
+                carouselItem.innerHTML = `
+                    <div class="character-details p-4">
+                        <div class="character-image" style="background: ${character.gradient};">
+                            ${character.avatar}
+                        </div>
+                        <div class="character-info">
+                            <h3>${character.name}</h3>
+                            <h6>${character.position}</h6>
+                            <p>${character.description}</p>
+                            <h5 style="color: #00ffff; margin-top: 2rem;">Stats:</h5>
+                            ${Object.entries(character.stats).map(([stat, value]) => 
+                                `<div class="stat-item">
+                                    <span>${stat}:</span>
+                                    <span>${value}/100</span>
+                                </div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                carouselContent.appendChild(carouselItem);
+            });
+
+            // Show modal and go to selected character
+            characterModal.show();
+            carousel.to(selectedIndex);
+        }
+    </script>
+</body>
+</html>
